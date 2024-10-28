@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Matematika</title>
+  <style>
+    .notification {
+      background: lightgreen;
+      font-size: 32px;
+      padding: 5px;
+      margin: 5px;
+    }
+
+    .wrong {
+      background: lightcoral;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100vh;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+      height: 200px;
+      width: 500px;
+      border-style: solid;
+    }
+
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dropdown select {
+      width: 200px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: #f9f9f9;
+      cursor: pointer;
+      font-size: larger;
+    }
+
+    .container {
+      display: flex;
+      min-width: 500px;
+      align-items: center;
+      justify-content: space-around;
+    }
+
+    #combined,
+    #result {
+      border: 1px solid black;
+      width: 90%;
+      padding: 5px;
+      font-size: 32px;
+      text-align: center;
+      margin: 0 auto;
+    }
+
+    #combined {
+      background-color: aliceblue;
+    }
+
+    .button {
+      font-size: 32px;
+      height: 48px;
+      margin: 0 auto;
+      display: block;
+      width: max-content;
+      min-width: 90px;
+    }
+
+    .button-1 {
+      font-size: 32px;
+      height: 48px;
+      margin: 0;
+      display: block;
+      width: max-content;
+      min-width: 90px;
+    }
+  </style>
+  <script>
+    function generateCombinedExpression() {
+      let num1 = Math.floor(Math.random() * 49) + 1;
+      let num2 = Math.floor(Math.random() * 49) + 1;
+      const op = document.getElementById('operation').value;
+
+      if (['-', '/'].includes(op) && num1 < num2) {
+        [num1, num2] = [num2, num1];
+      }
+
+      document.getElementById('combined').value = `${num1} ${op} ${num2} =`;
+    }
+
+    function reset() {
+      document.getElementById('calculation').reset()
+      let button = document.querySelector('#calculate')
+      button.innerHTML = 'Hitung';
+      button.onclick = function () {
+        verifyResult(event);
+      }
+      document.querySelector('.notification').remove()
+      generateCombinedExpression()
+    }
+
+    function verifyResult(event) {
+      event.preventDefault();
+      const input = document.getElementById('combined').value;
+      const [num1, op, num2] = input.split(' ');
+      const userResult = parseInt(document.getElementById('result').value);
+      let message;
+      let className;
+
+      let calcResult;
+
+      switch (op) {
+        case '+':
+          calcResult = parseInt(num1) + parseInt(num2);
+          break;
+        case '-':
+          calcResult = parseInt(num1) - parseInt(num2);
+          break;
+        case '*':
+          calcResult = parseInt(num1) * parseInt(num2);
+          break;
+        case '/':
+          calcResult = parseInt(num1) / parseInt(num2);
+          break;
+        default:
+          break;
+      }
+
+      if (!userResult) {
+        return
+      }
+      
+      if (userResult === calcResult) {
+        message = 'Benar';
+        className = 'notification';
+
+        let button = document.querySelector('#calculate')
+        button.innerHTML = 'Lagi';
+        button.onclick = function () {
+          reset()
+        }
+      } else {
+        message = 'Salah';
+        className = 'notification wrong';
+      }
+
+      let notification = document.querySelector('.notification');
+
+      if (!notification) {
+        notification = document.createElement('div');
+        document.body.appendChild(notification);
+      }
+
+      notification.className = className;
+      notification.innerHTML = message;
+    }
+  </script>
+</head>
+
+<body>
+  <h1>Belajar berhitung</h1>
+
+  <div class="container">
+    <div class="dropdown">
+      <select id="operation">
+        <option value="+">Pertambahan</option>
+        <option value="-">Pengurangan</option>
+        <option value="*">Perkalian</option>
+        <option value="/">Pembagian</option>
+      </select>
+    </div>
+    <button class="button-1" id="generate" onclick="generateCombinedExpression()">Acak</button>
+  </div>
+
+  <form id="calculation" action="#" method="post" onsubmit="verifyResult(event)">
+    <input type="text" name="combined" id="combined" readonly>
+    <input type="number" name="result" id="result">
+    <button class="button" id="calculate">Hitung</button>
+  </form>
+</body>
+
+</html>
